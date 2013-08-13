@@ -1,0 +1,12 @@
+{
+    "name": "naderman/composer-aws",
+    "type": "composer-plugin",
+    "autoload": {
+        "psr-0": {
+            "Naderman\\Composer": "src/"
+        }
+    },
+    "extra": {
+        "class": "Naderman\\Composer\\AwsPlugin"
+    }
+}
