@@ -8,5 +8,8 @@
     },
     "extra": {
         "class": "Naderman\\Composer\\AwsPlugin"
+    },
+    "require": {
+        "aws/aws-sdk-php": "2.1.*"
     }
 }
