@@ -12,16 +12,32 @@
 namespace Composer\AWS;
 
 use Composer\Composer;
-use Composer\Plugin\PluginInterface
+use Composer\EventDispatcher\EventSubscriberInterface;
+use Composer\Plugin\PluginInterface;
+use Composer\Plugin\PluginEvents;
+use Composer\Plugin\PrepareRemoteFilesystemEvent;
 
 /**
  * Composer Plugin for AWS functionality
  *
  * @author Nils Adermann <naderman@naderman.de>
  */
-class AwsPlugin implements PluginInterface
+class AwsPlugin implements PluginInterface, EventSubscriberInterface
 {
     public function activate(Composer $composer)
+    {
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return array(
+            PluginEvents::PREPARE_REMOTE_FILESYSTEM => array(
+                array('onPrepareRemoteFilesystem', 0)
+            ),
+        );
+    }
+
+    public function onPrepareRemoteFilesystem(PrepareRemoteFilesystemEvent $event)
     {
         echo "\n\nfoo\n\n";
     }
