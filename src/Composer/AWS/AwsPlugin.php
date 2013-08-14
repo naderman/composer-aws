@@ -13,6 +13,7 @@ namespace Composer\AWS;
 
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
+use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PrepareRemoteFilesystemEvent;
@@ -24,7 +25,16 @@ use Composer\Plugin\PrepareRemoteFilesystemEvent;
  */
 class AwsPlugin implements PluginInterface, EventSubscriberInterface
 {
-    public function activate(Composer $composer)
+    protected $composer;
+    protected $io;
+
+    public function __construct(Composer $composer, IOInterface $io)
+    {
+        $this->composer = $composer;
+        $this->io = $io;
+    }
+
+    public function activate()
     {
     }
 
@@ -39,6 +49,12 @@ class AwsPlugin implements PluginInterface, EventSubscriberInterface
 
     public function onPrepareRemoteFilesystem(PrepareRemoteFilesystemEvent $event)
     {
-        echo "\n\nfoo\n\n";
+        $protocol = parse_url($event->getProcessedUrl(), PHP_URL_SCHEME);
+
+        if ($protocol === 's3') {
+            $awsClient = new AwsClient($this->io, $this->composer->getConfig());
+            $s3RemoteFilesystem = new S3RemoteFilesystem($this->io, $event->getRemoteFilesystem()->getOptions(), $awsClient);
+            $event->setRemoteFilesystem($s3RemoteFilesystem);
+        }
     }
 }

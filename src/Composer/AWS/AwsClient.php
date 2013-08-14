@@ -35,34 +35,28 @@ class AwsClient
     protected $io;
 
     /**
-     * @var bool
-     */
-    protected $progress;
-
-    /**
      * @param \Composer\IO\IOInterface $io
      * @param \Composer\Config         $config
-     * @param bool                     $progress
      */
-    public function __construct(IOInterface $io, Config $config, $progress = true)
+    public function __construct(IOInterface $io, Config $config)
     {
         $this->io       = $io;
         $this->config   = $config;
-        $this->progress = $progress;
     }
 
     /**
      * @param string $url URL of the archive on Amazon S3.
      * @param string $to  Location on disk.
+     * @param bool                     $progress
      *
      * @throws \Composer\Downloader\TransportException
      */
-    public function download($url, $to)
+    public function download($url, $to, $progress)
     {
         $bucket = $this->determineBucket($url);
         $key    = basename($url);
 
-        if ($this->progress) {
+        if ($progress) {
             $this->io->write("    Downloading: <comment>connection...</comment>", false);
         }
 
@@ -78,7 +72,7 @@ class AwsClient
                 )
             );
 
-            if ($this->progress) {
+            if ($progress) {
                 $this->io->overwrite("    Downloading: <comment>100%</comment>");
             }
 
