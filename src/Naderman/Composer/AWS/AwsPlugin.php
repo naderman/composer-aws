@@ -28,14 +28,10 @@ class AwsPlugin implements PluginInterface, EventSubscriberInterface
     protected $composer;
     protected $io;
 
-    public function __construct(Composer $composer, IOInterface $io)
+    public function activate(Composer $composer, IOInterface $io)
     {
         $this->composer = $composer;
         $this->io = $io;
-    }
-
-    public function activate()
-    {
     }
 
     public static function getSubscribedEvents()
