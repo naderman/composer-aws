@@ -3,11 +3,11 @@
     "type": "composer-plugin",
     "autoload": {
         "psr-0": {
-            "Composer\\AWS\\": "src/"
+            "Naderman\\Composer\\AWS\\": "src/"
         }
     },
     "extra": {
-        "class": "Composer\\AWS\\AwsPlugin"
+        "class": "Naderman\\Composer\\AWS\\AwsPlugin"
     },
     "require": {
         "aws/aws-sdk-php": "2.1.*"

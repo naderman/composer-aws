@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Composer\AWS;
+namespace Naderman\Composer\AWS;
 
 use Composer\IO\IOInterface;
 use Composer\Config;
