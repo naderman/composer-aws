@@ -76,7 +76,7 @@ class AwsClient
                 $this->io->overwrite("    Downloading: <comment>100%</comment>");
             }
 
-            if (false === file_exists($to)) {
+            if (false === file_exists($to) || !filesize($to)) {
                 $errorMessage = sprintf(
                     "Unknown error occurred: '%s' was not downloaded from '%s'.",
                     $key, $url
