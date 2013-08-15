@@ -1,6 +1,16 @@
 {
     "name": "naderman/composer-aws",
     "type": "composer-plugin",
+    "description": "A composer plugin that allows installing packages stored on S3",
+    "keywords": ["amazon", "aws", "s3", "composer", "composer-plugin", "plugin"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nils Adermann",
+            "email": "naderman@naderman.de",
+            "homepage": "http://www.naderman.de"
+        }
+    ],
     "autoload": {
         "psr-0": {
             "Naderman\\Composer\\AWS\\": "src/"
