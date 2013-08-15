@@ -53,8 +53,7 @@ class AwsClient
      */
     public function download($url, $to, $progress)
     {
-        $bucket = $this->determineBucket($url);
-        $key    = basename($url);
+        list($bucket, $key) = $this->determineBucketAndKey($url);
 
         if ($progress) {
             $this->io->write("    Downloading: <comment>connection...</comment>", false);
@@ -64,7 +63,7 @@ class AwsClient
             $s3 = self::s3factory($this->config);
             $s3->getObject(
                 array(
-                    'Bucket'                => implode('/', $bucket),
+                    'Bucket'                => $bucket,
                     'Key'                   => $key,
                     'command.response_body' => \Guzzle\Http\EntityBody::factory(
                         fopen($to, 'w+')
@@ -101,21 +100,23 @@ class AwsClient
      *
      * @return array
      */
-    public function determineBucket($url)
+    public function determineBucketAndKey($url)
     {
         $hostName = parse_url($url, PHP_URL_HOST);
         $path     = substr(parse_url($url, PHP_URL_PATH), 1);
 
-        $bucket = array();
+        $parts = array();
         if (!empty($path)) {
-            $bucket[] = dirname($path);
+            $parts = explode('/', $path);
         }
 
         if ('s3.amazonaws.com' !== $hostName) {
             // replace potential aws hostname
-            array_unshift($bucket, str_replace('.s3.amazonaws.com', '', $hostName));
+            array_unshift($parts, str_replace('.s3.amazonaws.com', '', $hostName));
         }
-        return $bucket;
+        $bucket = array_shift($parts);
+        $key = implode('/', $parts);
+        return array($bucket, $key);
     }
 
     /**
