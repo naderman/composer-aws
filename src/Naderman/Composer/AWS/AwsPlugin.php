@@ -16,7 +16,7 @@ use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Plugin\PluginEvents;
-use Composer\Plugin\PrepareRemoteFilesystemEvent;
+use Composer\Plugin\PreFileDownloadEvent;
 
 /**
  * Composer Plugin for AWS functionality
@@ -37,13 +37,13 @@ class AwsPlugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            PluginEvents::PREPARE_REMOTE_FILESYSTEM => array(
-                array('onPrepareRemoteFilesystem', 0)
+            PluginEvents::PRE_FILE_DOWNLOAD => array(
+                array('onPreFileDownload', 0)
             ),
         );
     }
 
-    public function onPrepareRemoteFilesystem(PrepareRemoteFilesystemEvent $event)
+    public function onPreFileDownload(PreFileDownloadEvent $event)
     {
         $protocol = parse_url($event->getProcessedUrl(), PHP_URL_SCHEME);
 
