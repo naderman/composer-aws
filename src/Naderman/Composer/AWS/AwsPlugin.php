@@ -49,7 +49,11 @@ class AwsPlugin implements PluginInterface, EventSubscriberInterface
 
         if ($protocol === 's3') {
             $awsClient = new AwsClient($this->io, $this->composer->getConfig());
-            $s3RemoteFilesystem = new S3RemoteFilesystem($this->io, $event->getRemoteFilesystem()->getOptions(), $awsClient);
+            $s3RemoteFilesystem = new S3RemoteFilesystem(
+                $this->io,
+                $event->getRemoteFilesystem()->getOptions(),
+                $awsClient
+            );
             $event->setRemoteFilesystem($s3RemoteFilesystem);
         }
     }

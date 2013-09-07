@@ -78,7 +78,8 @@ class AwsClient
             if (false === file_exists($to) || !filesize($to)) {
                 $errorMessage = sprintf(
                     "Unknown error occurred: '%s' was not downloaded from '%s'.",
-                    $key, $url
+                    $key,
+                    $url
                 );
                 throw new TransportException($errorMessage);
             }
