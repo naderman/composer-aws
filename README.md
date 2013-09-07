@@ -4,8 +4,11 @@ A composer plugin to download packages from a private repository.
 
 ## Configuration
 
- 1. Create an IAM profile for your instances to access the bucket - then no other configuration is necessary.
- 2. As an alternative, add the following to your `config.json` (in `$COMPOSER_HOME`):
+There are three options available in order to configure and use this plugin:
+
+ 1. For AWS EC2: Create an IAM profile for your instances to access the bucket - then no other configuration is necessary.
+ 2. Set the environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
+ 3. Add the following to your `config.json` (in `$COMPOSER_HOME`):
 
 ```json
 {
