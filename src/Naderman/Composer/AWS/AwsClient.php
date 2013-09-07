@@ -78,7 +78,8 @@ class AwsClient
             if (false === file_exists($to) || !filesize($to)) {
                 $errorMessage = sprintf(
                     "Unknown error occurred: '%s' was not downloaded from '%s'.",
-                    $key, $url
+                    $key,
+                    $url
                 );
                 throw new TransportException($errorMessage);
             }
@@ -136,6 +137,17 @@ class AwsClient
          */
         if (($composerAws = $config->get('amazon-aws'))) {
             $s3config = array_merge($s3config, $composerAws);
+        } else {
+            /**
+             *  Attempt to fall back to environment variables.
+             */
+            $key = getenv('AWS_ACCESS_KEY_ID');
+            $secret = getenv('AWS_SECRET_ACCESS_KEY');
+
+            if (false !== $key && false !== $secret) {
+                $s3config['key'] = $key;
+                $s3config['secret'] = $secret;
+            }
         }
 
         return S3Client::factory($s3config);
