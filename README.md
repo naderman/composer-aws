@@ -1,6 +1,6 @@
 # composer-aws
 
-A composer plugin to download packages from a private repository.
+A composer plugin to download packages from Amazon S3 which may be used for private repositories.
 
 ## Configuration
 
