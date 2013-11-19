@@ -7,7 +7,7 @@ A composer plugin to download packages from Amazon S3 which may be used for priv
 ### Global scope (per user) installation
 
 ```shell
-composer global require "naderman/composer-aws:~0.2"
+$ composer global require "naderman/composer-aws:~0.2"
 ```
 
 ### Project scope installation
@@ -15,7 +15,7 @@ composer global require "naderman/composer-aws:~0.2"
 `/!\` This way needs you perform pluggin installation BEFORE to add packages links using S3
 
 ```shell
-composer require "naderman/composer-aws:~0.2"
+$ composer require "naderman/composer-aws:~0.2"
 ```
 
 ## Configuration
