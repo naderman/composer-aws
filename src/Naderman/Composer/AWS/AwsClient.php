@@ -45,6 +45,46 @@ class AwsClient
     }
 
     /**
+     * @param string $url      URL of the archive on Amazon S3.
+     * @param bool   $progress
+     *
+     * @throws \Composer\Downloader\TransportException
+     */
+    public function getContents($url, $progress)
+    {
+        list($bucket, $key) = $this->determineBucketAndKey($url);
+
+        if ($progress) {
+            $this->io->write("    Downloading: <comment>connection...</comment>", false);
+        }
+
+        try {
+            $s3     = self::s3factory($this->config);
+            $result = $s3->getObject(
+                array(
+                    'Bucket'                => $bucket,
+                    'Key'                   => $key
+                )
+            );
+
+            if ($progress) {
+                $this->io->overwrite("    Downloading: <comment>100%</comment>");
+            }
+
+            return $result['Body'];
+        } catch (\Aws\Common\Exception\InstanceProfileCredentialsException $e) {
+            $msg = "Please add key/secret into config.json or set up an IAM profile for your EC2 instance.";
+            throw new TransportException($msg, 403, $e);
+        } catch(Aws\S3\Exception\S3Exception $e) {
+            throw new TransportException("Connection to Amazon S3 failed.", null, $e);
+        } catch (TransportException $e) {
+            throw $e; // just re-throw
+        } catch (\Exception $e) {
+            throw new TransportException("Problem?", null, $e);
+        }
+    }
+
+    /**
      * @param string $url URL of the archive on Amazon S3.
      * @param string $to  Location on disk.
      * @param bool                     $progress
