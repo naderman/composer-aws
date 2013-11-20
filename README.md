@@ -12,8 +12,6 @@ $ composer global require "naderman/composer-aws:~0.2"
 
 ### Project scope installation
 
-`/!\` This way needs you perform pluggin installation BEFORE to add packages links using S3
-
 ```shell
 $ composer require "naderman/composer-aws:~0.2"
 ```
