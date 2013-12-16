@@ -39,6 +39,21 @@ There are three options available in order to configure and use this plugin:
 
 Once the plugin is installed and configured, you can transparently use `packages.json` files which contain `s3://` schemes for dist urls.
 
+## Fetch packages registry on AWS S3
+
+Just update your `composer.json` with your S3 bucket's URLs:
+
+```json
+{
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "s3://my-S3-bucket/my/packages/repository/path/"
+        }
+    ]
+}
+```
+
 ## Further reading
 
  * Setting up satis as a mirror: http://getcomposer.org/doc/articles/handling-private-packages-with-satis.md#downloads
