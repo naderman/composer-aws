@@ -101,7 +101,7 @@ class AwsClient
             throw new TransportException("Problem?", null, $e);
         }
 
-        return this;
+        return $this;
     }
 
     /**
