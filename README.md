@@ -37,7 +37,7 @@ There are three options available in order to configure and use this plugin:
 
 ## Usage
 
-Once the plugin is well installed and configured, you can transparently use `packages.json` files using `s3://` schemes for dist urls.
+Once the plugin is installed and configured, you can transparently use `packages.json` files which contain `s3://` schemes for dist urls.
 
 ## Further reading
 
