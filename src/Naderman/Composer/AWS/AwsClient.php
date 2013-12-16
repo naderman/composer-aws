@@ -46,11 +46,12 @@ class AwsClient
 
     /**
      * @param string $url      URL of the archive on Amazon S3.
-     * @param bool   $progress
+     * @param bool   $progress Show progress
+     * @param string $to       Target file name
      *
      * @throws \Composer\Downloader\TransportException
      */
-    public function getContents($url, $progress)
+    public function download($url, $progress, $to = null)
     {
         list($bucket, $key) = $this->determineBucketAndKey($url);
 
@@ -59,19 +60,36 @@ class AwsClient
         }
 
         try {
-            $s3     = self::s3factory($this->config);
-            $result = $s3->getObject(
-                array(
-                    'Bucket'                => $bucket,
-                    'Key'                   => $key
-                )
+            $params = array(
+                'Bucket'                => $bucket,
+                'Key'                   => $key
             );
+
+            if ($to) {
+                $params['command.response_body'] = \Guzzle\Http\EntityBody::factory(
+                    fopen($to, 'w+')
+                );
+            }
+    
+            $s3     = self::s3factory($this->config);
+            $result = $s3->getObject($params);
 
             if ($progress) {
                 $this->io->overwrite("    Downloading: <comment>100%</comment>");
             }
 
-            return $result['Body'];
+            if ($to) {
+                if (false === file_exists($to) || !filesize($to)) {
+                    $errorMessage = sprintf(
+                        "Unknown error occurred: '%s' was not downloaded from '%s'.",
+                        $key,
+                        $url
+                    );
+                    throw new TransportException($errorMessage);
+                }
+            } else {
+                return $result['Body'];
+            }
         } catch (\Aws\Common\Exception\InstanceProfileCredentialsException $e) {
             $msg = "Please add key/secret into config.json or set up an IAM profile for your EC2 instance.";
             throw new TransportException($msg, 403, $e);
@@ -82,25 +100,8 @@ class AwsClient
         } catch (\Exception $e) {
             throw new TransportException("Problem?", null, $e);
         }
-    }
 
-    /**
-     * @param string $url URL of the archive on Amazon S3.
-     * @param string $to  Location on disk.
-     * @param bool   $progress
-     *
-     * @throws \Composer\Downloader\TransportException
-     */
-    public function download($url, $to, $progress)
-    {
-        if (!file_put_contents($to, $this->getContents($url, $progress))) {
-            $errorMessage = sprintf(
-                "Unknown error occurred: '%s' was not downloaded from '%s'.",
-                $key,
-                $url
-            );
-            throw new TransportException($errorMessage);
-        }
+        return this;
     }
 
     /**

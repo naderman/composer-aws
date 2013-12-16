@@ -38,7 +38,7 @@ class S3RemoteFilesystem extends RemoteFilesystem
      */
     public function getContents($originUrl, $fileUrl, $progress = true, $options = array())
     {
-        return $this->awsClient->getContents($fileUrl, $progress);
+        return $this->awsClient->download($fileUrl, $progress);
     }
 
     /**
@@ -46,6 +46,6 @@ class S3RemoteFilesystem extends RemoteFilesystem
      */
     public function copy($originUrl, $fileUrl, $fileName, $progress = true, $options = array())
     {
-        $this->awsClient->download($fileUrl, $fileName, $progress);
+        $this->awsClient->download($fileUrl, $progress, $fileName);
     }
 }
