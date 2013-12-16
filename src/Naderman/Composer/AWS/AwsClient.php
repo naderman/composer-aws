@@ -87,52 +87,19 @@ class AwsClient
     /**
      * @param string $url URL of the archive on Amazon S3.
      * @param string $to  Location on disk.
-     * @param bool                     $progress
+     * @param bool   $progress
      *
      * @throws \Composer\Downloader\TransportException
      */
     public function download($url, $to, $progress)
     {
-        list($bucket, $key) = $this->determineBucketAndKey($url);
-
-        if ($progress) {
-            $this->io->write("    Downloading: <comment>connection...</comment>", false);
-        }
-
-        try {
-            $s3 = self::s3factory($this->config);
-            $s3->getObject(
-                array(
-                    'Bucket'                => $bucket,
-                    'Key'                   => $key,
-                    'command.response_body' => \Guzzle\Http\EntityBody::factory(
-                        fopen($to, 'w+')
-                    )
-                )
+        if (!file_put_contents($to, $this->getContents($url, $progress))) {
+            $errorMessage = sprintf(
+                "Unknown error occurred: '%s' was not downloaded from '%s'.",
+                $key,
+                $url
             );
-
-            if ($progress) {
-                $this->io->overwrite("    Downloading: <comment>100%</comment>");
-            }
-
-            if (false === file_exists($to) || !filesize($to)) {
-                $errorMessage = sprintf(
-                    "Unknown error occurred: '%s' was not downloaded from '%s'.",
-                    $key,
-                    $url
-                );
-                throw new TransportException($errorMessage);
-            }
-
-        } catch (\Aws\Common\Exception\InstanceProfileCredentialsException $e) {
-            $msg = "Please add key/secret into config.json or set up an IAM profile for your EC2 instance.";
-            throw new TransportException($msg, 403, $e);
-        } catch(Aws\S3\Exception\S3Exception $e) {
-            throw new TransportException("Connection to Amazon S3 failed.", null, $e);
-        } catch (TransportException $e) {
-            throw $e; // just re-throw
-        } catch (\Exception $e) {
-            throw new TransportException("Problem?", null, $e);
+            throw new TransportException($errorMessage);
         }
     }
 
