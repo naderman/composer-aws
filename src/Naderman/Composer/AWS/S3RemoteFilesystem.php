@@ -12,6 +12,7 @@
 namespace Naderman\Composer\AWS;
 
 use Composer\Composer;
+use Composer\Config;
 use Composer\IO\IOInterface;
 use Composer\Util\RemoteFilesystem;
 
@@ -27,9 +28,9 @@ class S3RemoteFilesystem extends RemoteFilesystem
     /**
      * {@inheritDoc}
      */
-    public function __construct(IOInterface $io, $options, AwsClient $awsClient)
+    public function __construct(IOInterface $io, Config $config = null, array $options = array(), AwsClient $awsClient)
     {
-        parent::__construct($io, $options);
+        parent::__construct($io, $config, $options);
         $this->awsClient = $awsClient;
     }
 
