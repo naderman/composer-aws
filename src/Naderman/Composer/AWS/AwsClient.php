@@ -35,6 +35,16 @@ class AwsClient
     protected $io;
 
     /**
+     * @var S3Client
+     */
+    protected $client;
+
+    /**
+     * @var array
+     */
+    protected $awsConfig;
+
+    /**
      * @param \Composer\IO\IOInterface $io
      * @param \Composer\Config         $config
      */
@@ -42,6 +52,32 @@ class AwsClient
     {
         $this->io       = $io;
         $this->config   = $config;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAwsConfig()
+    {
+        if (is_null($this->awsConfig)) {
+            if (isset($_SERVER['HOME']) && file_exists($_SERVER['HOME'] . '/.aws/config')) {
+                $this->awsConfig = parse_ini_file($_SERVER['HOME'] . '/.aws/config', true);
+            } else {
+                $this->awsConfig = [];
+            }
+        }
+        
+        return $this->awsConfig;
+    }
+
+    /**
+     * @param array $config
+     * @return AwsClient
+     */
+    public function setAwsConfig($config)
+    {
+        $this->awsConfig = $config;
+        return $this;
     }
 
     /**
@@ -71,7 +107,7 @@ class AwsClient
                 );
             }
     
-            $s3     = self::s3factory($this->config);
+            $s3     = $this->s3factory($this->config);
             $result = $s3->getObject($params);
 
             if ($progress) {
@@ -125,39 +161,73 @@ class AwsClient
         }
         $bucket = array_shift($parts);
         $key = implode('/', $parts);
+        if (!$key) {
+            $key = '/';
+        }
         return array($bucket, $key);
     }
 
     /**
+     * This method reads AWS config and credentials and create s3 client
+     * Behaviour aims to mimic region setup as it is for credentials:
+     * http://docs.aws.amazon.com/aws-sdk-php/v3/guide/getting-started/basic-usage.html#creating-a-client
+     * Which is the following (stopping at the first successful case):
+     * 1) read region from config parameter
+     * 2) read region from environment variables
+     * 3) read region from profile config file
+     * 4) set region US Standard region
+     * 
      * @param \Composer\Config $config
      *
      * @return \Aws\S3\S3Client
      */
-    public static function s3factory(Config $config)
+    public function s3factory(Config $config)
     {
-        $s3config = array(
-            'default_cache_config'  => '',
-            'certificate_authority' => '',
-        );
-
-        /**
-         * If these are not set and we happen to have an IAM profile, it will still work.
-         */
-        if (($composerAws = $config->get('amazon-aws'))) {
-            $s3config = array_merge($s3config, $composerAws);
-        } else {
+        if (is_null($this->client)) {
+            $s3config = array(
+                'version' => 'latest'
+            );
+    
             /**
-             *  Attempt to fall back to environment variables.
+             * If these are not set and we happen to have an IAM profile, it will still work.
              */
-            $key = getenv('AWS_ACCESS_KEY_ID');
-            $secret = getenv('AWS_SECRET_ACCESS_KEY');
-
-            if (false !== $key && false !== $secret) {
-                $s3config['key'] = $key;
-                $s3config['secret'] = $secret;
+            if (($composerAws = $config->get('amazon-aws'))) {
+                $s3config = array_merge($s3config, $composerAws);
             }
+            
+            if (!isset($s3config['profile']) && getenv('AWS_DEFAULT_PROFILE')) {
+                $s3config['profile'] = getenv('AWS_DEFAULT_PROFILE');
+            }
+            
+            if (!isset($s3config['region'])) {
+                $this->detectRegion($s3config);
+            }
+            
+            $this->client = new S3Client($s3config);
         }
 
-        return S3Client::factory($s3config);
+        return $this->client;
     }
+    
+    public function detectRegion(array &$config)
+    {
+        if (getenv('AWS_DEFAULT_REGION')) {
+            $config['region'] = getenv('AWS_DEFAULT_REGION');
+        } elseif (isset($config['profile'])) {
+            $awsConfig = $this->getAwsConfig();
+            if (isset($awsConfig['profile ' . $config['profile']]) &&
+                isset($awsConfig['profile ' . $config['profile']]['region'])) {
+                $config['region'] = $awsConfig['profile ' . $config['profile']]['region'];
+            // support aws CLI <1.1.0 config file format
+            } elseif (isset($awsConfig[$config['profile']]) &&
+                isset($awsConfig[$config['profile']]['region'])) {
+                $config['region'] = $awsConfig[$config['profile']]['region'];
+            }
+        }
+        
+        if (!isset($config['region'])) {
+            $config['region'] = 'us-east-1';
+        }
+    }
+    
 }

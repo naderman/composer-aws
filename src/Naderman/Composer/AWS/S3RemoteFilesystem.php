@@ -23,6 +23,9 @@ use Composer\Util\RemoteFilesystem;
  */
 class S3RemoteFilesystem extends RemoteFilesystem
 {
+    /**
+     * @var AwsClient
+     */
     protected $awsClient;
 
     /**
