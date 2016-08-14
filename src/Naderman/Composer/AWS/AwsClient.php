@@ -11,10 +11,11 @@
 
 namespace Naderman\Composer\AWS;
 
+use Aws\Exception\CredentialsException;
+use Aws\S3\Exception\S3Exception;
 use Composer\IO\IOInterface;
 use Composer\Config;
 use Composer\Downloader\TransportException;
-use Composer\Json\JsonFile;
 
 use Aws\S3\S3Client;
 
@@ -81,10 +82,11 @@ class AwsClient
     }
 
     /**
-     * @param string $url      URL of the archive on Amazon S3.
-     * @param bool   $progress Show progress
-     * @param string $to       Target file name
+     * @param string $url URL of the archive on Amazon S3.
+     * @param bool $progress Show progress
+     * @param string $to Target file name
      *
+     * @return $this
      * @throws \Composer\Downloader\TransportException
      */
     public function download($url, $progress, $to = null)
@@ -102,9 +104,7 @@ class AwsClient
             );
 
             if ($to) {
-                $params['command.response_body'] = \Guzzle\Http\EntityBody::factory(
-                    fopen($to, 'w+')
-                );
+                $params['SaveAs'] = $to;
             }
     
             $s3     = $this->s3factory($this->config);
@@ -126,10 +126,10 @@ class AwsClient
             } else {
                 return $result['Body'];
             }
-        } catch (\Aws\Common\Exception\InstanceProfileCredentialsException $e) {
-            $msg = "Please add key/secret into config.json or set up an IAM profile for your EC2 instance.";
+        } catch (CredentialsException $e) {
+            $msg = "Please add key/secret or a profile name into config.json or set up an IAM profile for your EC2 instance.";
             throw new TransportException($msg, 403, $e);
-        } catch(Aws\S3\Exception\S3Exception $e) {
+        } catch(S3Exception $e) {
             throw new TransportException("Connection to Amazon S3 failed.", null, $e);
         } catch (TransportException $e) {
             throw $e; // just re-throw
