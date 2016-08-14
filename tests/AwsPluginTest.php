@@ -39,7 +39,7 @@ class AwsPluginTest extends \PHPUnit_Framework_TestCase
         $this->composer = new Composer();
         $this->composer->setConfig(new Config());
 
-        $this->io = $this->createMock('Composer\IO\IOInterface');
+        $this->io = $this->getMockBuilder('Composer\IO\IOInterface')->getMock();
     }
 
     /**
@@ -110,7 +110,9 @@ class AwsPluginTest extends \PHPUnit_Framework_TestCase
             ->method('getProcessedUrl')
             ->willReturn($address);
         
-        $remoteFileSystem = $this->createMock(RemoteFilesystem::class);
+        $remoteFileSystem = $this->getMockBuilder(RemoteFilesystem::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $event->expects($this->once())
             ->method('getRemoteFileSystem')
             ->willReturn($remoteFileSystem);

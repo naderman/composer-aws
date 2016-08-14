@@ -203,6 +203,22 @@ class AwsClient
                 $this->detectRegion($s3config);
             }
             
+            if (!function_exists('AWS\manifest')) {
+                require_once __DIR__ . '/../../../../../../aws/aws-sdk-php/src/functions.php';
+            }
+            
+            if (!function_exists('GuzzleHttp\Psr7\uri_for')) {
+                require_once __DIR__ . '/../../../../../../guzzlehttp/psr7/src/functions_include.php';
+            }
+            
+            if (!function_exists('GuzzleHttp\choose_handler')) {
+                require_once __DIR__ . '/../../../../../../guzzlehttp/guzzle/src/functions_include.php';
+            }
+            
+            if (!function_exists('GuzzleHttp\Promise\queue')) {
+                require_once __DIR__ . '/../../../../../../guzzlehttp/promises/src/functions_include.php';
+            }
+            
             $this->client = new S3Client($s3config);
         }
 

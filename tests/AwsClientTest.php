@@ -35,7 +35,7 @@ class AwsClientTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->config = new Config();
-        $this->io = $this->createMock('Composer\IO\IOInterface');
+        $this->io = $this->getMockBuilder('Composer\IO\IOInterface')->getMock();
     }
     
     public function testS3FactoryUseUSStandardRegionIfNotProvided()
