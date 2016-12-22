@@ -228,7 +228,7 @@ class AwsClient
             if (isset($s3config['region'])) {
                 $this->client = new S3Client($s3config);
             } else {
-                $this->io->write("WARN: composer-aws couldn't find a configured region. It'll take a couple extra HTTP round-trips to determine the region(s).");
+                $this->io->write("WARN: composer-aws couldn't find a configured region for S3. It'll take a couple extra HTTP round-trips to determine the region(s).");
                 $this->client = new S3MultiRegionClient($s3config);
             }
         }
