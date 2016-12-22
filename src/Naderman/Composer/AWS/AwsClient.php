@@ -18,6 +18,7 @@ use Composer\Config;
 use Composer\Downloader\TransportException;
 
 use Aws\S3\S3Client;
+use Aws\S3\S3MultiRegionClient;
 
 /**
  * @author Till Klampaeckel <till@php.net>
@@ -175,7 +176,6 @@ class AwsClient
      * 1) read region from config parameter
      * 2) read region from environment variables
      * 3) read region from profile config file
-     * 4) set region US Standard region
      * 
      * @param \Composer\Config $config
      *
@@ -193,16 +193,18 @@ class AwsClient
              */
             if (($composerAws = $config->get('amazon-aws'))) {
                 $s3config = array_merge($s3config, $composerAws);
+                if (isset($composerAws['secret']) && !isset($composerAws['credentials'])) {
+                    $s3config['credentials'] = array(
+                        'key'    => $composerAws['key'],
+                        'secret' => $composerAws['secret']
+                    );
+                }
             }
             
             if (!isset($s3config['profile']) && getenv('AWS_DEFAULT_PROFILE')) {
                 $s3config['profile'] = getenv('AWS_DEFAULT_PROFILE');
             }
-            
-            if (!isset($s3config['region'])) {
-                $this->detectRegion($s3config);
-            }
-            
+
             if (!function_exists('AWS\manifest')) {
                 require_once __DIR__ . '/../../../../../../aws/aws-sdk-php/src/functions.php';
             }
@@ -218,8 +220,17 @@ class AwsClient
             if (!function_exists('GuzzleHttp\Promise\queue')) {
                 require_once __DIR__ . '/../../../../../../guzzlehttp/promises/src/functions_include.php';
             }
-            
-            $this->client = new S3Client($s3config);
+
+            if (!isset($s3config['region'])) {
+                $this->detectRegion($s3config);
+            }
+
+            if (isset($s3config['region'])) {
+                $this->client = new S3Client($s3config);
+            } else {
+                $this->io->write("WARN: composer-aws couldn't find a configured region. It'll take a couple extra HTTP round-trips to determine the region(s).");
+                $this->client = new S3MultiRegionClient($s3config);
+            }
         }
 
         return $this->client;
@@ -240,10 +251,5 @@ class AwsClient
                 $config['region'] = $awsConfig[$config['profile']]['region'];
             }
         }
-        
-        if (!isset($config['region'])) {
-            $config['region'] = 'us-east-1';
-        }
     }
-    
 }
