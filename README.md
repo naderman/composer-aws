@@ -28,8 +28,10 @@ There are three options available in order to configure and use this plugin:
 {
     "config": {
         "amazon-aws": {
-            "key": "your aws access key",
-            "secret": "your aws secret"
+            "credentials": {
+                "key": "your aws access key",
+                "secret": "your aws secret"
+            }
         }
     }
 }
