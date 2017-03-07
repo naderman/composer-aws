@@ -16,11 +16,21 @@
             "Naderman\\Composer\\AWS\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-1": {
+            "Test\\Naderman\\Composer\\AWS\\": "tests/"
+        }
+    },
     "extra": {
         "class": "Naderman\\Composer\\AWS\\AwsPlugin"
     },
     "require": {
-        "aws/aws-sdk-php": "2.*",
+        "php": ">=5.5",
+        "aws/aws-sdk-php": "^3.0",
         "composer-plugin-api": "^1.0"
+    },
+    "require-dev": {
+        "composer/composer": "^1.0",
+        "phpunit/phpunit": "~4.8"
     }
 }
