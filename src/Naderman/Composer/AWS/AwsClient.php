@@ -206,7 +206,12 @@ class AwsClient
             }
 
             if (!function_exists('AWS\manifest')) {
-                require_once __DIR__ . '/../../../../../../aws/aws-sdk-php/src/functions.php';
+                // This file has to be loaded with the exact same name as in the composer static autoloader to avoid
+                // including it twice, which leads to functions in the AWS Namespace to be declared twice.
+                $static_include_path = __DIR__ . '/../../../../../../composer/autoload_static.php';
+                $static_include_path = realpath($static_include_path);
+                $static_include_path = dirname($static_include_path);
+                require_once   $static_include_path . '/../aws/aws-sdk-php/src/functions.php';
             }
             
             if (!function_exists('GuzzleHttp\Psr7\uri_for')) {
