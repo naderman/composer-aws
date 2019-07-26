@@ -7,13 +7,13 @@ A composer plugin to load repository data and download packages from Amazon S3 w
 ### Global scope (per user) installation
 
 ```shell
-$ composer global require "naderman/composer-aws:~0.2"
+$ composer global require "naderman/composer-aws:^1.0"
 ```
 
 ### Project scope installation
 
 ```shell
-$ composer require "naderman/composer-aws:~0.2"
+$ composer require "naderman/composer-aws:^1.0"
 ```
 
 ## Configuration
