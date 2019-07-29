@@ -4,7 +4,6 @@
     "description": "A composer plugin that allows installing packages stored on S3",
     "keywords": ["amazon", "aws", "s3", "composer", "composer-plugin", "plugin"],
     "license": "MIT",
-    "version": "1.0.0",
     "authors": [
         {
             "name": "Nils Adermann",
