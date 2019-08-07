@@ -205,7 +205,14 @@ class AwsClient
                 $s3config['profile'] = getenv('AWS_DEFAULT_PROFILE');
             }
 
-            if (!function_exists('AWS\manifest')) {
+            $static_include_path = __DIR__ . '/../../../../../../composer/autoload_static.php';
+            if ( file_exists( $static_include_path)){
+                // This file has to be loaded with the exact same name as in the composer static autoloader to avoid
+                // including it twice, which leads to functions in the AWS Namespace to be declared twice.
+                $static_include_path = realpath($static_include_path);
+                $static_include_path = dirname($static_include_path);
+                require_once   $static_include_path . '/../aws/aws-sdk-php/src/functions.php';
+            } else if (!function_exists('AWS\manifest')) {
                 require_once __DIR__ . '/../../../../../../aws/aws-sdk-php/src/functions.php';
             }
             
