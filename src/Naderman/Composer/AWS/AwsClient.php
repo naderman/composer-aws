@@ -135,7 +135,7 @@ class AwsClient
         } catch (TransportException $e) {
             throw $e; // just re-throw
         } catch (\Exception $e) {
-            throw new TransportException("Problem?", null, $e);
+            throw new TransportException("Problem?" + $e, null, $e);
         }
 
         return $this;
