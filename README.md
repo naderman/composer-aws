@@ -1,10 +1,12 @@
-# composer-aws
+# composer-aws (ABANDONED)
 
 A composer plugin to load repository data and download packages from Amazon S3 with authentication support for private repositories.
 
 -----
 
-## Looking for a way to access private packages from AWS? Check out [Private Packagist](https://packagist.com) for a better private Composer repository solution!
+## Using AWS S3 to host private packages? Check out [Private Packagist](https://packagist.com) for a better private Composer repository solution!
+
+This project has been abandoned and will not support Composer 2.0. If you are currently relying on this plugin to download packages from S3, you should consider using [Private Packagist](https://packagist.com) to manage your private packages.
 
 -----
 
