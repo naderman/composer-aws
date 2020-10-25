@@ -1,4 +1,5 @@
 {
+    "abandoned": true,
     "name": "naderman/composer-aws",
     "type": "composer-plugin",
     "description": "A composer plugin that allows installing packages stored on S3",
